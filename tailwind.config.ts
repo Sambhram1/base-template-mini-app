@@ -29,6 +29,19 @@ export default {
 				border: 'var(--border)',
 				input: 'var(--input)',
 				ring: 'var(--ring)',
+				// LuxLink luxury color scheme
+				gold: {
+					50: '#fefdf3',
+					100: '#fdf9e8',
+					200: '#faf0c5',
+					300: '#f5e397',
+					400: '#eed067',
+					500: '#f5c518',
+					600: '#e1a818',
+					700: '#ba8114',
+					800: '#986517',
+					900: '#7d5217',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

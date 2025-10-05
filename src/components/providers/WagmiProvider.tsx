@@ -1,11 +1,11 @@
 import { createConfig, http, WagmiProvider } from "wagmi";
-import { base, degen, mainnet, optimism, unichain, celo } from "wagmi/chains";
+import { baseSepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { farcasterFrame } from "@farcaster/frame-wagmi-connector";
 import { coinbaseWallet, metaMask } from 'wagmi/connectors';
 import { APP_NAME, APP_ICON_URL, APP_URL } from "~/lib/constants";
 import { useEffect, useState } from "react";
-import { useConnect, useAccount } from "wagmi";
+import { useConnect, useAccount, useSwitchChain, useChainId } from "wagmi";
 import React from "react";
 
 // Custom hook for Coinbase Wallet detection and auto-connection
@@ -41,15 +41,28 @@ function useCoinbaseWalletAutoConnect() {
   return isCoinbaseWallet;
 }
 
+// Hook to auto-switch to Base Sepolia
+function useAutoSwitchToBaseSepolia() {
+  const chainId = useChainId();
+  const { isConnected } = useAccount();
+  const { switchChain } = useSwitchChain();
+
+  useEffect(() => {
+    // Automatically switch to Base Sepolia if connected to wrong network
+    if (isConnected && chainId !== baseSepolia.id) {
+      try {
+        switchChain({ chainId: baseSepolia.id });
+      } catch (error) {
+        console.error('Failed to switch to Base Sepolia:', error);
+      }
+    }
+  }, [isConnected, chainId, switchChain]);
+}
+
 export const config = createConfig({
-  chains: [base, optimism, mainnet, degen, unichain, celo],
+  chains: [baseSepolia], // Only Base Sepolia to prevent mainnet transactions
   transports: {
-    [base.id]: http(),
-    [optimism.id]: http(),
-    [mainnet.id]: http(),
-    [degen.id]: http(),
-    [unichain.id]: http(),
-    [celo.id]: http(),
+    [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org'),
   },
   connectors: [
     farcasterFrame(),
@@ -69,9 +82,10 @@ export const config = createConfig({
 
 const queryClient = new QueryClient();
 
-// Wrapper component that provides Coinbase Wallet auto-connection
-function CoinbaseWalletAutoConnect({ children }: { children: React.ReactNode }) {
+// Wrapper component that provides auto-connection and network switching
+function AutoConnectAndSwitch({ children }: { children: React.ReactNode }) {
   useCoinbaseWalletAutoConnect();
+  useAutoSwitchToBaseSepolia();
   return <>{children}</>;
 }
 
@@ -79,9 +93,9 @@ export default function Provider({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <CoinbaseWalletAutoConnect>
+        <AutoConnectAndSwitch>
           {children}
-        </CoinbaseWalletAutoConnect>
+        </AutoConnectAndSwitch>
       </QueryClientProvider>
     </WagmiProvider>
   );

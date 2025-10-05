@@ -1,0 +1,12 @@
+{
+  "contractAddress": "0x74dba1EE38Db3f03491D6Ccd3dA4Bf7D525FD2D7",
+  "network": "baseSepolia",
+  "chainId": 84532,
+  "deployer": "0xeA60bCEe9526E87b6a3155d238220213c6EaE6D4",
+  "timestamp": "2025-10-05T10:30:00.000Z",
+  "manufacturers": [
+    { "address": "0x742d35cc6634c0532925a3b8d94959fbed66204b", "brand": "Hermès" },
+    { "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045", "brand": "Rolex" },
+    { "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30", "brand": "Gucci" }
+  ]
+}
